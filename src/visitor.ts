@@ -56,9 +56,7 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
     const operationName: string = this.convertName(node.name.value, {
       useTypesPrefix: false,
     });
-    if (/SegmentProfileTraits|WatchNext/.test(operationName)) {
-      return "";
-    }
+
     this.importedDocuments.push(documentVariableName);
     this.importedDocuments.push(operationVariablesTypes);
     const readString = `export function readQuery${operationName}(variables?: ${operationVariablesTypes}) {
