@@ -14,7 +14,7 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
 > {
   private _externalImportPrefix: string;
   private imports = new Set<string>();
-  public importedDocuments = [];
+
   constructor(
     schema: GraphQLSchema,
     fragments: LoadedFragment[],
@@ -32,6 +32,11 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
   }
 
   public getImports(): string[] {
+    this.imports.add(
+      `import  { NormalizedCacheObject, defaultDataIdFromObject } from 'apollo-cache-inmemory';`
+    );
+    this.imports.add(`import type { ApolloClient } from 'apollo-client';`);
+
     const baseImports = super.getImports();
     const hasOperations = this._collectedOperations.length > 0;
 
@@ -45,11 +50,9 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
   private _buildOperationReadCache(
     node: OperationDefinitionNode,
     documentVariableName: string,
+    operationResultType: string,
     operationVariablesTypes: string
   ): string {
-    this.imports.add(
-      `import { readQuery } from '../../components/withApollo/fnReadQuery';`
-    );
     if (node.operation === "mutation") {
       return "";
     }
@@ -57,38 +60,34 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
       useTypesPrefix: false,
     });
 
-    this.importedDocuments.push(documentVariableName);
-    this.importedDocuments.push(operationVariablesTypes);
-    const readString = `export function readQuery${operationName}(variables?: ${operationVariablesTypes}) {
-     return readQuery({
-            query: ${documentVariableName},
-            variables,
-        });
-    };`;
+    const readString = `export function readQuery${operationName}(cache: ApolloClient<NormalizedCacheObject>, variables?: ${operationVariablesTypes}):${operationResultType} {
+            return cache.readQuery({
+                query,
+                variables,
+            });
+            };`;
 
-    return [readString].filter((a) => a).join("\n");
+    const writeString = `export function writeQuery${operationName}(cache: ApolloClient<NormalizedCacheObject>, data: ${operationResultType}, variables?: ${operationVariablesTypes}) {
+            cache.writeQuery({
+                query: Operations.${documentVariableName},
+                variables,
+                data,
+            });
+        }`;
+
+    return [readString, writeString].filter((a) => a).join("\n");
   }
 
   public buildOperationReadFragmentCache(): string {
-    this.imports.add(
-      `import { readFragment } from '../../components/withApollo/fnReadFragment';`
-    );
-
     const res = this._fragments.map((fragment) => {
-      this.importedDocuments.push(`${fragment.name}FragmentDoc`);
-      this.importedDocuments.push(`${fragment.name}Fragment`);
-      return `export function readFragment${fragment.name}(fragmentId: string) {
-                return readFragment<${fragment.name}Fragment>({
-                    id: fragmentId,
-                    __typename: '${fragment.onType}',
-                    fragment: ${fragment.name}FragmentDoc,
+      return `export function readFragment${fragment.name}(cache: ApolloClient<NormalizedCacheObject>, fragmentId: string) {
+                return cache.readFragment<Types.${fragment.name}Fragment>({
+                    id: defaultDataIdFromObject({id: fragmentId, __typename: '${fragment.onType}'}),
+                    fragment: Operations.${fragment.name}FragmentDoc,,
                     fragmentName: '${fragment.name}',
-                });
+                })
             };`;
     });
-    this.imports.add(
-      `import {${this.importedDocuments.join(",")}} from './graphql'`
-    );
     return res.filter((a) => a).join("\n");
   }
 
@@ -106,6 +105,7 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
     const cache = this._buildOperationReadCache(
       node,
       documentVariableName,
+      operationResultType,
       operationVariablesTypes
     );
     return [cache].join("\n");

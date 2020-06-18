@@ -5,10 +5,7 @@ import {
   PluginValidateFn,
   Types,
 } from "@graphql-codegen/plugin-helpers";
-import {
-  DocumentMode,
-  LoadedFragment,
-} from "@graphql-codegen/visitor-plugin-common";
+import { LoadedFragment } from "@graphql-codegen/visitor-plugin-common";
 import { RawClientSideBasePluginConfig } from "@graphql-codegen/visitor-plugin-common";
 import {
   FragmentDefinitionNode,
@@ -18,7 +15,7 @@ import {
   visit,
 } from "graphql";
 
-import { ApolloCacheVisitor } from "./visitor";
+import { ApolloCacheVisitor } from "./cacheVisitor";
 
 export const plugin: PluginFunction<
   RawClientSideBasePluginConfig,
@@ -29,7 +26,7 @@ export const plugin: PluginFunction<
   config: RawClientSideBasePluginConfig
 ) => {
   const allAst = concatAST(documents.map((v) => v.document));
-  config.documentMode = DocumentMode.external;
+
   const allFragments: LoadedFragment[] = [
     ...(allAst.definitions.filter(
       (d) => d.kind === Kind.FRAGMENT_DEFINITION
@@ -52,7 +49,7 @@ export const plugin: PluginFunction<
   const fr = visitor.buildOperationReadFragmentCache();
 
   return {
-    prepend: visitor.getImports().filter((i) => !/Operations/.test(i)),
+    prepend: visitor.getImports(),
     content: [
       fr,
       ...visitorResult.definitions.filter((t) => typeof t === "string"),
@@ -70,3 +67,5 @@ export const validate: PluginValidateFn<any> = async (
     throw new Error(`Plugin "react-apollo" requires extension to be ".tsx"!`);
   }
 };
+
+export { ApolloCacheVisitor };
