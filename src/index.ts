@@ -46,12 +46,10 @@ export const plugin: PluginFunction<
     documents
   );
   let visitorResult = visit(allAst, { leave: visitor });
-  const fr = visitor.buildOperationReadFragmentCache();
 
   return {
     prepend: visitor.getImports(),
     content: [
-      fr,
       ...visitorResult.definitions.filter((t) => typeof t === "string"),
     ].join("\n"),
   };

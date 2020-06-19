@@ -27,7 +27,7 @@ generates:
         presetConfig:
             typesPath: ./graphql
         plugins:
-            - ./build/index.js
+            - ./build/src/index.js
 hooks:
     afterAllFileWrite:
         - prettier --write

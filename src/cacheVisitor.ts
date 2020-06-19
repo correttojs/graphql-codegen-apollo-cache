@@ -62,7 +62,7 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
 
     const readString = `export function readQuery${operationName}(cache: ApolloClient<NormalizedCacheObject>, variables?: ${operationVariablesTypes}):${operationResultType} {
             return cache.readQuery({
-                query,
+                query: Operations.${documentVariableName},
                 variables,
             });
             };`;
@@ -76,19 +76,6 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
         }`;
 
     return [readString, writeString].filter((a) => a).join("\n");
-  }
-
-  public buildOperationReadFragmentCache(): string {
-    const res = this._fragments.map((fragment) => {
-      return `export function readFragment${fragment.name}(cache: ApolloClient<NormalizedCacheObject>, fragmentId: string) {
-                return cache.readFragment<Types.${fragment.name}Fragment>({
-                    id: defaultDataIdFromObject({id: fragmentId, __typename: '${fragment.onType}'}),
-                    fragment: Operations.${fragment.name}FragmentDoc,,
-                    fragmentName: '${fragment.name}',
-                })
-            };`;
-    });
-    return res.filter((a) => a).join("\n");
   }
 
   protected buildOperation(
