@@ -150,7 +150,7 @@ describe("React Apollo", () => {
       expect(content.content).toBeSimilarStringTo(`
 export function readQueryFeed(cache: ApolloClient<NormalizedCacheObject>, variables?: FeedQueryVariables):FeedQuery {
                  return cache.readQuery({
-                     query,
+                    query: Operations.FeedDocument,
                      variables,
                  });
                  };`);
