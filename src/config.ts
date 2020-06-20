@@ -74,4 +74,16 @@ export interface ApolloCacheRawPluginConfig
    * @description Regexp options to exclude a certain operation name
    */
   excludePatternsOptions?: string;
+  /**
+   * @description Path to custom DataIdFromObject import
+   */
+  dataIdFromObjectImport?: string;
+  /**
+   * @description Path to custom DataIdFromObject function
+   */
+  dataIdFromObjectName?: string;
+  generateFragmentsRead?: boolean;
+  generateFragmentsWrite?: boolean;
+  generateQueriesRead?: boolean;
+  generateQueriesWrite?: boolean;
 }

@@ -48,10 +48,12 @@ export const plugin: PluginFunction<
   );
   let visitorResult = visit(allAst, { leave: visitor });
 
+  const fragments = visitor.buildOperationReadFragmentCache();
   return {
     prepend: visitor.getImports(),
     content: [
       ...visitorResult.definitions.filter((t) => typeof t === "string"),
+      fragments,
     ].join("\n"),
   };
 };

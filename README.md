@@ -11,6 +11,12 @@ GraphQL Code Generator plugin for generating a functions to read and write from 
 - `apolloVersion` (default: 2): apollo client version
 - `apolloCacheImportFrom` (default: apollo-cache-inmemory): apollo-cache-inmemory dependency
 - `apolloImportFrom` (default: apollo-client v2 or @apollo/client v3): apollo client dependency
+- `dataIdFromObjectImport` (default: apollo-cache-inmemory): custom dataIdFromObject dependency
+- `dataIdFromObjectName`:  dataIdFromObject function name
+- `generateFragmentsRead`(default: true): generate fragments read functions
+- `generateFragmentsWrite`(default: true): generate fragments write functions
+- `generateQueriesWrite`(default: true): generate query read functions
+- `generateQueriesWrite`(default: true): generate query write functions
 
 ## Example config
 

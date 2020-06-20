@@ -12,8 +12,14 @@ generates:
       documentMode: external
       importDocumentNodeExternallyFrom: ./graphql
       apolloVersion: 2
-      excludePatterns: 'getComments'
-      excludePatternsOptions: 'i'
+      # excludePatterns: 'getComments'
+      # excludePatternsOptions: 'i'
+      # customDataIdFromObjectName: 'test'
+      # customDataIdFromObjectImport: 'abc'
+      generateQueriesWrite: false
+      generateQueriesRead: true
+      generateFragmentsRead: true
+      generateFragmentsWrite: false
     preset: import-types
     presetConfig:
       typesPath: ./graphql

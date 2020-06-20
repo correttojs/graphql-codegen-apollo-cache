@@ -69,7 +69,7 @@ describe("Apollo Cache", () => {
 
       expect(content.prepend).toContain("import gql from 'graphql-tag';");
       expect(content.prepend).toContain(
-        "import { NormalizedCacheObject } from 'apollo-cache-inmemory';"
+        "import { defaultDataIdFromObject, NormalizedCacheObject } from 'apollo-cache-inmemory';"
       );
       expect(content.prepend).toContain(
         "import * as Apollo from 'apollo-client';"
@@ -93,7 +93,7 @@ describe("Apollo Cache", () => {
 
       expect(content.prepend).toContain("import gql from 'graphql-tag';");
       expect(content.prepend).toContain(
-        "import { NormalizedCacheObject } from 'cache';"
+        "import { defaultDataIdFromObject, NormalizedCacheObject } from 'cache';"
       );
       expect(content.prepend).toContain("import * as Apollo from 'client';");
       await validateTypeScript(content, schema, docs, {});

@@ -21,6 +21,12 @@ export interface ApolloCachePluginConfig extends ClientSideBasePluginConfig {
   apolloVersion?: 2 | 3;
   excludePatterns?: string;
   excludePatternsOptions?: string;
+  dataIdFromObjectName?: string;
+  dataIdFromObjectImport?: string;
+  generateFragmentsRead?: boolean;
+  generateFragmentsWrite?: boolean;
+  generateQueriesRead?: boolean;
+  generateQueriesWrite?: boolean;
 }
 
 export class ApolloCacheVisitor extends ClientSideBaseVisitor<
@@ -65,6 +71,27 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
         rawConfig.excludePatternsOptions,
         ""
       ),
+      dataIdFromObjectImport: getConfigValue(
+        rawConfig.dataIdFromObjectImport,
+        null
+      ),
+      dataIdFromObjectName: getConfigValue(
+        rawConfig.dataIdFromObjectName,
+        "defaultDataIdFromObject"
+      ),
+      generateFragmentsRead: getConfigValue(
+        rawConfig.generateFragmentsRead,
+        true
+      ),
+      generateFragmentsWrite: getConfigValue(
+        rawConfig.generateFragmentsWrite,
+        true
+      ),
+      generateQueriesRead: getConfigValue(rawConfig.generateQueriesRead, true),
+      generateQueriesWrite: getConfigValue(
+        rawConfig.generateQueriesWrite,
+        true
+      ),
     });
 
     this._externalImportPrefix = this.config.importOperationTypesFrom
@@ -80,8 +107,13 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
       `import * as Apollo from '${this.config.apolloImportFrom}';`
     );
     this.imports.add(
-      `import { NormalizedCacheObject } from '${this.config.apolloCacheImportFrom}';`
+      `import { defaultDataIdFromObject, NormalizedCacheObject } from '${this.config.apolloCacheImportFrom}';`
     );
+    if (this.config.dataIdFromObjectImport) {
+      this.imports.add(
+        `import { ${this.config.dataIdFromObjectName} } from '${this.config.dataIdFromObjectImport}';`
+      );
+    }
 
     const baseImports = super.getImports();
     const hasOperations = this._collectedOperations.length > 0;
@@ -116,20 +148,24 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
       return "";
     }
 
-    const readString = `export function readQuery${operationName}(cache: Apollo.ApolloClient<NormalizedCacheObject>, variables?: ${operationVariablesTypes}):${operationResultType} {
+    const readString = this.config.generateQueriesRead
+      ? `export function readQuery${operationName}(cache: Apollo.ApolloClient<NormalizedCacheObject>, variables?: ${operationVariablesTypes}):${operationResultType} {
             return cache.readQuery({
                 query: Operations.${documentVariableName},
                 variables,
             });
-            };`;
+            };`
+      : "";
 
-    const writeString = `export function writeQuery${operationName}(cache: Apollo.ApolloClient<NormalizedCacheObject>, data: ${operationResultType}, variables?: ${operationVariablesTypes}) {
+    const writeString = this.config.generateQueriesWrite
+      ? `export function writeQuery${operationName}(cache: Apollo.ApolloClient<NormalizedCacheObject>, data: ${operationResultType}, variables?: ${operationVariablesTypes}) {
             cache.writeQuery({
                 query: Operations.${documentVariableName},
                 variables,
                 data,
             });
-        }`;
+        }`
+      : "";
 
     return [readString, writeString].filter((a) => a).join("\n");
   }
@@ -152,5 +188,43 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
       operationVariablesTypes
     );
     return [cache].join("\n");
+  }
+
+  public buildOperationReadFragmentCache(): string {
+    const res = this._fragments.map((fragment) => {
+      const read = this.config.generateFragmentsRead
+        ? `export function readFragment${fragment.name}(cache: Apollo.ApolloClient<NormalizedCacheObject>, fragmentId: string, fragmentIdProps?: Partial<Types.${fragment.name}Fragment>) {
+                
+                const dataId = ${this.config.dataIdFromObjectName}({
+                  id: fragmentId,
+                  __typename: '${fragment.onType}',
+                  ...(fragmentIdProps ? fragmentIdProps : {})
+                })
+                return cache.readFragment<Types.${fragment.name}Fragment>({
+                    id: dataId,
+                    fragment: Operations.${fragment.name}FragmentDoc,
+                    fragmentName: '${fragment.name}',
+                });
+            };`
+        : "";
+
+      const write = this.config.generateFragmentsWrite
+        ? `export function writeFragment${fragment.name}(cache: Apollo.ApolloClient<NormalizedCacheObject>, fragmentId: string, data: Partial<Types.${fragment.name}Fragment>, fragmentIdProps?: Partial<Types.${fragment.name}Fragment>) {
+              const dataId = ${this.config.dataIdFromObjectName}({
+                  id: fragmentId,
+                  __typename: '${fragment.onType}',
+                  ...(fragmentIdProps ? fragmentIdProps : {})
+              })
+              cache.writeFragment({
+                id: dataId,
+                fragment: Operations.${fragment.name}FragmentDoc,
+                data,
+              })
+            }
+            `
+        : "";
+      return [read, write].filter((a) => a).join("\n");
+    });
+    return res.filter((a) => a).join("\n");
   }
 }
