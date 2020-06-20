@@ -189,10 +189,9 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
   public buildOperationReadFragmentCache(): string {
     const res = this._fragments.map((fragment) => {
       const read = this.config.generateFragmentsRead
-        ? `export function readFragment${fragment.name}(cache: Apollo.ApolloClient<NormalizedCacheObject>, fragmentId: string, fragmentIdProps?: Partial<Types.${fragment.name}Fragment>) {
+        ? `export function readFragment${fragment.name}(cache: Apollo.ApolloClient<NormalizedCacheObject>, fragmentIdProps?: Partial<Types.${fragment.name}Fragment>) {
                 ${this.config.pre}
                 const dataId = ${this.config.dataIdFromObjectName}({
-                  id: fragmentId,
                   __typename: '${fragment.onType}',
                   ...(fragmentIdProps ? fragmentIdProps : {})
                 })
@@ -206,10 +205,9 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
         : "";
 
       const write = this.config.generateFragmentsWrite
-        ? `export function writeFragment${fragment.name}(cache: Apollo.ApolloClient<NormalizedCacheObject>, fragmentId: string, data: Partial<Types.${fragment.name}Fragment>, fragmentIdProps?: Partial<Types.${fragment.name}Fragment>) {
+        ? `export function writeFragment${fragment.name}(cache: Apollo.ApolloClient<NormalizedCacheObject>, fragmentIdProps?: Partial<Types.${fragment.name}Fragment>, data: Partial<Types.${fragment.name}Fragment>) {
               ${this.config.pre}
               const dataId = ${this.config.dataIdFromObjectName}({
-                  id: fragmentId,
                   __typename: '${fragment.onType}',
                   ...(fragmentIdProps ? fragmentIdProps : {})
               })
