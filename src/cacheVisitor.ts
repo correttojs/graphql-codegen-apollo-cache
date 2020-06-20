@@ -10,24 +10,9 @@ import {
 
 import autoBind from "auto-bind";
 import { GraphQLSchema, OperationDefinitionNode } from "graphql";
-import { ApolloCacheRawPluginConfig } from "./config";
+import { ApolloCacheRawPluginConfig, Config } from "./config";
 
-export interface ApolloCachePluginConfig extends ClientSideBasePluginConfig {
-  withHooks?: boolean;
-  apolloImportFrom?: string;
-  apolloCacheImportFrom?: string;
-  apolloReactCommonImportFrom?: string;
-  apolloReactHooksImportFrom?: string;
-  apolloVersion?: 2 | 3;
-  excludePatterns?: string;
-  excludePatternsOptions?: string;
-  dataIdFromObjectName?: string;
-  dataIdFromObjectImport?: string;
-  generateFragmentsRead?: boolean;
-  generateFragmentsWrite?: boolean;
-  generateQueriesRead?: boolean;
-  generateQueriesWrite?: boolean;
-}
+export type ApolloCachePluginConfig = ClientSideBasePluginConfig & Config;
 
 export class ApolloCacheVisitor extends ClientSideBaseVisitor<
   ApolloCacheRawPluginConfig,
@@ -92,6 +77,9 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
         rawConfig.generateQueriesWrite,
         true
       ),
+      pre: getConfigValue(rawConfig.pre, ""),
+      post: getConfigValue(rawConfig.post, ""),
+      customImports: getConfigValue(rawConfig.customImports, null),
     });
 
     this._externalImportPrefix = this.config.importOperationTypesFrom
@@ -113,6 +101,9 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
       this.imports.add(
         `import { ${this.config.dataIdFromObjectName} } from '${this.config.dataIdFromObjectImport}';`
       );
+    }
+    if (this.config.customImports) {
+      this.imports.add(this.config.customImports);
     }
 
     const baseImports = super.getImports();
@@ -150,20 +141,25 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
 
     const readString = this.config.generateQueriesRead
       ? `export function readQuery${operationName}(cache: Apollo.ApolloClient<NormalizedCacheObject>, variables?: ${operationVariablesTypes}):${operationResultType} {
+            ${this.config.pre}
             return cache.readQuery({
                 query: Operations.${documentVariableName},
                 variables,
             });
+            ${this.config.post}
             };`
       : "";
 
     const writeString = this.config.generateQueriesWrite
       ? `export function writeQuery${operationName}(cache: Apollo.ApolloClient<NormalizedCacheObject>, data: ${operationResultType}, variables?: ${operationVariablesTypes}) {
+            ${this.config.pre}
             cache.writeQuery({
                 query: Operations.${documentVariableName},
                 variables,
                 data,
             });
+
+            ${this.config.post}
         }`
       : "";
 
@@ -194,7 +190,7 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
     const res = this._fragments.map((fragment) => {
       const read = this.config.generateFragmentsRead
         ? `export function readFragment${fragment.name}(cache: Apollo.ApolloClient<NormalizedCacheObject>, fragmentId: string, fragmentIdProps?: Partial<Types.${fragment.name}Fragment>) {
-                
+                ${this.config.pre}
                 const dataId = ${this.config.dataIdFromObjectName}({
                   id: fragmentId,
                   __typename: '${fragment.onType}',
@@ -205,11 +201,13 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
                     fragment: Operations.${fragment.name}FragmentDoc,
                     fragmentName: '${fragment.name}',
                 });
+                ${this.config.post}
             };`
         : "";
 
       const write = this.config.generateFragmentsWrite
         ? `export function writeFragment${fragment.name}(cache: Apollo.ApolloClient<NormalizedCacheObject>, fragmentId: string, data: Partial<Types.${fragment.name}Fragment>, fragmentIdProps?: Partial<Types.${fragment.name}Fragment>) {
+              ${this.config.pre}
               const dataId = ${this.config.dataIdFromObjectName}({
                   id: fragmentId,
                   __typename: '${fragment.onType}',
@@ -220,7 +218,8 @@ export class ApolloCacheVisitor extends ClientSideBaseVisitor<
                 fragment: Operations.${fragment.name}FragmentDoc,
                 data,
               })
-            }
+              ${this.config.post}
+            };
             `
         : "";
       return [read, write].filter((a) => a).join("\n");

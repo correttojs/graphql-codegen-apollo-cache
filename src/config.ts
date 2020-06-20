@@ -5,8 +5,9 @@ import { RawClientSideBasePluginConfig } from "@graphql-codegen/visitor-plugin-c
  *
  * It extends the basic TypeScript plugins: `@graphql-codegen/typescript`, `@graphql-codegen/typescript-operations` - and thus shares a similar configuration.
  */
-export interface ApolloCacheRawPluginConfig
-  extends RawClientSideBasePluginConfig {
+export type ApolloCacheRawPluginConfig = RawClientSideBasePluginConfig & Config;
+
+export type Config = {
   /**
    * @description Customized the output by enabling/disabling the generated React Hooks.
    * @default false
@@ -86,4 +87,7 @@ export interface ApolloCacheRawPluginConfig
   generateFragmentsWrite?: boolean;
   generateQueriesRead?: boolean;
   generateQueriesWrite?: boolean;
-}
+  pre?: string;
+  post?: string;
+  customImports?: string;
+};

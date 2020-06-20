@@ -17,6 +17,9 @@ GraphQL Code Generator plugin for generating a functions to read and write from 
 - `generateFragmentsWrite`(default: true): generate fragments write functions
 - `generateQueriesWrite`(default: true): generate query read functions
 - `generateQueriesWrite`(default: true): generate query write functions
+- `customImports` (default: ''): full custom import declaration
+- `pre` (default: ''): custom code before each function
+- `post` (default: ''):  custom code after each function
 
 ## Example config
 

@@ -20,6 +20,8 @@ generates:
       generateQueriesRead: true
       generateFragmentsRead: true
       generateFragmentsWrite: false
+      pre: 'try{'
+      post: '}catch(e){console.log(e); return null}'
     preset: import-types
     presetConfig:
       typesPath: ./graphql
