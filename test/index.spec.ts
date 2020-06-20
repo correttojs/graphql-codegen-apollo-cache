@@ -5,7 +5,7 @@ import { Types, mergeOutputs } from "@graphql-codegen/plugin-helpers";
 import { plugin as tsPlugin } from "@graphql-codegen/typescript";
 import { plugin as tsDocumentsPlugin } from "@graphql-codegen/typescript-operations";
 
-describe("React Apollo", () => {
+describe("Apollo Cache", () => {
   let spyConsoleError: jest.SpyInstance;
   beforeEach(() => {
     spyConsoleError = jest.spyOn(console, "warn");
@@ -69,10 +69,51 @@ describe("React Apollo", () => {
 
       expect(content.prepend).toContain("import gql from 'graphql-tag';");
       expect(content.prepend).toContain(
-        "import  { NormalizedCacheObject, defaultDataIdFromObject } from 'apollo-cache-inmemory';"
+        "import { NormalizedCacheObject } from 'apollo-cache-inmemory';"
       );
       expect(content.prepend).toContain(
-        "import type { ApolloClient } from 'apollo-client';"
+        "import * as Apollo from 'apollo-client';"
+      );
+      await validateTypeScript(content, schema, docs, {});
+    });
+
+    it("should import custom apollo-cache-inmemory and apollo-client dependencies", async () => {
+      const docs = [{ location: "", document: basicDoc }];
+      const content = (await plugin(
+        schema,
+        docs,
+        {
+          apolloCacheImportFrom: "cache",
+          apolloImportFrom: "client",
+        },
+        {
+          outputFile: "graphql.tsx",
+        }
+      )) as Types.ComplexPluginOutput;
+
+      expect(content.prepend).toContain("import gql from 'graphql-tag';");
+      expect(content.prepend).toContain(
+        "import { NormalizedCacheObject } from 'cache';"
+      );
+      expect(content.prepend).toContain("import * as Apollo from 'client';");
+      await validateTypeScript(content, schema, docs, {});
+    });
+
+    it("should import custom  apollo-client v3 dependencies", async () => {
+      const docs = [{ location: "", document: basicDoc }];
+      const content = (await plugin(
+        schema,
+        docs,
+        {
+          apolloVersion: 3,
+        },
+        {
+          outputFile: "graphql.tsx",
+        }
+      )) as Types.ComplexPluginOutput;
+
+      expect(content.prepend).toContain(
+        "import * as Apollo from '@apollo/client';"
       );
       await validateTypeScript(content, schema, docs, {});
     });
@@ -148,14 +189,65 @@ describe("React Apollo", () => {
       )) as Types.ComplexPluginOutput;
 
       expect(content.content).toBeSimilarStringTo(`
-export function readQueryFeed(cache: ApolloClient<NormalizedCacheObject>, variables?: FeedQueryVariables):FeedQuery {
+export function readQueryFeed(cache: Apollo.ApolloClient<NormalizedCacheObject>, variables?: FeedQueryVariables):FeedQuery {
                  return cache.readQuery({
                     query: Operations.FeedDocument,
                      variables,
                  });
                  };`);
       expect(content.content).toBeSimilarStringTo(`
-export function writeQueryFeed(cache: ApolloClient<NormalizedCacheObject>, data: FeedQuery, variables?: FeedQueryVariables) {
+export function writeQueryFeed(cache: Apollo.ApolloClient<NormalizedCacheObject>, data: FeedQuery, variables?: FeedQueryVariables) {
+                 cache.writeQuery({
+                     query: Operations.FeedDocument,
+                     variables,
+                     data,
+                 });
+             }`);
+      await validateTypeScript(content, schema, docs, {});
+    });
+
+    it("Should exclude query patterns", async () => {
+      const documents = parse(/* GraphQL */ `
+        query feed {
+          feed {
+            id
+            commentCount
+            repository {
+              full_name
+              html_url
+              owner {
+                avatar_url
+              }
+            }
+          }
+        }
+
+        mutation submitRepository($name: String) {
+          submitRepository(repoFullName: $name) {
+            id
+          }
+        }
+      `);
+      const docs = [{ location: "", document: documents }];
+
+      const content = (await plugin(
+        schema,
+        docs,
+        { excludePatterns: "feed", excludePatternsOptions: "i" },
+        {
+          outputFile: "graphql.tsx",
+        }
+      )) as Types.ComplexPluginOutput;
+
+      expect(content.content).not.toBeSimilarStringTo(`
+export function readQueryFeed(cache: Apollo.ApolloClient<NormalizedCacheObject>, variables?: FeedQueryVariables):FeedQuery {
+                 return cache.readQuery({
+                    query: Operations.FeedDocument,
+                     variables,
+                 });
+                 };`);
+      expect(content.content).not.toBeSimilarStringTo(`
+export function writeQueryFeed(cache: Apollo.ApolloClient<NormalizedCacheObject>, data: FeedQuery, variables?: FeedQueryVariables) {
                  cache.writeQuery({
                      query: Operations.FeedDocument,
                      variables,

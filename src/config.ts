@@ -5,42 +5,8 @@ import { RawClientSideBasePluginConfig } from "@graphql-codegen/visitor-plugin-c
  *
  * It extends the basic TypeScript plugins: `@graphql-codegen/typescript`, `@graphql-codegen/typescript-operations` - and thus shares a similar configuration.
  */
-export interface ReactApolloRawPluginConfig
+export interface ApolloCacheRawPluginConfig
   extends RawClientSideBasePluginConfig {
-  /**
-   * @description Customized the output by enabling/disabling the generated Component.
-   * @default true
-   *
-   * @exampleMarkdown
-   * ```yml
-   * generates:
-   * path/to/file.ts:
-   *  plugins:
-   *    - typescript
-   *    - typescript-operations
-   *    - typescript-react-apollo
-   *  config:
-   *    withComponent: false
-   * ```
-   */
-  withComponent?: boolean;
-  /**
-   * @description Customized the output by enabling/disabling the HOC.
-   * @default true
-   *
-   * @exampleMarkdown
-   * ```yml
-   * generates:
-   * path/to/file.ts:
-   *  plugins:
-   *    - typescript
-   *    - typescript-operations
-   *    - typescript-react-apollo
-   *  config:
-   *    withHOC: false
-   * ```
-   */
-  withHOC?: boolean;
   /**
    * @description Customized the output by enabling/disabling the generated React Hooks.
    * @default false
@@ -58,65 +24,31 @@ export interface ReactApolloRawPluginConfig
    * ```
    */
   withHooks?: boolean;
-  /**
-   * @description Customized the output by enabling/disabling the generated mutation function signature.
-   * @default true
-   *
-   * @exampleMarkdown
-   * ```yml
-   * generates:
-   * path/to/file.ts:
-   *  plugins:
-   *    - typescript
-   *    - typescript-operations
-   *    - typescript-react-apollo
-   *  config:
-   *    withMutationFn: true
-   * ```
-   */
-  withMutationFn?: boolean;
-  /**
-   * @description Enable generating a function to be used with refetchQueries
-   * @default false
-   *
-   * @exampleMarkdown
-   * ```yml
-   * generates:
-   * path/to/file.ts:
-   *  plugins:
-   *    - typescript
-   *    - typescript-operations
-   *    - typescript-react-apollo
-   *  config:
-   *    withRefetchFn: false
-   * ```
-   */
-  withRefetchFn?: boolean;
+
   /**
    * @description Customize the package where apollo-react common lib is loaded from.
-   * @default @apollo/react-common
+   * @default "@apollo/react-common"
    */
   apolloReactCommonImportFrom?: string;
+
   /**
-   * @description Customize the package where apollo-react component lib is loaded from.
-   * @default @apollo/react-components
+   * @description Customize the package where apollo-client lib is loaded from.
+   * @default "apollo-client"
    */
-  apolloReactComponentsImportFrom?: string;
+  apolloImportFrom?: string;
+
   /**
-   * @description Customize the package where apollo-react HOC lib is loaded from.
-   * @default @apollo/react-hoc
+   * @description Customize the package where apollo-cache-inmemory lib is loaded from.
+   * @default "apollo-cache-inmemory"
    */
-  apolloReactHocImportFrom?: string;
+  apolloCacheImportFrom?: string;
+
   /**
    * @description Customize the package where apollo-react hooks lib is loaded from.
-   * @default @apollo/react-hooks
+   * @default "@apollo/react-hooks"
    */
   apolloReactHooksImportFrom?: string;
-  /**
-   * @description You can specify a suffix that gets attached to the name of the generated component.
-   * @default Component
-   */
-  componentSuffix?: string;
+
   /**
    * @description Sets the version of react-apollo.
    * @default 2
@@ -133,57 +65,13 @@ export interface ReactApolloRawPluginConfig
    *    reactApolloVersion: 3
    * ```
    */
-  reactApolloVersion?: 2 | 3;
+  apolloVersion?: 2 | 3;
   /**
-   * @description Customized the output by enabling/disabling the generated result type.
-   * @default true
-   *
-   * @exampleMarkdown
-   * ```yml
-   * generates:
-   * path/to/file.ts:
-   *  plugins:
-   *    - typescript
-   *    - typescript-operations
-   *    - typescript-react-apollo
-   *  config:
-   *    withResultType: true
-   * ```
+   * @description Regexp to exclude a certain operation name
    */
-  withResultType?: boolean;
+  excludePatterns?: string;
   /**
-   * @description Customized the output by enabling/disabling the generated mutation option type.
-   * @default true
-   *
-   * @exampleMarkdown
-   * ```yml
-   * generates:
-   * path/to/file.ts:
-   *  plugins:
-   *    - typescript
-   *    - typescript-operations
-   *    - typescript-react-apollo
-   *  config:
-   *    withMutationOptionsType: true
-   * ```
+   * @description Regexp options to exclude a certain operation name
    */
-  withMutationOptionsType?: boolean;
-  /**
-   * @description Allows you to enable/disable the generation of docblocks in generated code.
-   * Some IDE's (like VSCode) add extra inline information with docblocks, you can disable this feature if your preferred IDE does not.
-   * @default true
-   *
-   * @exampleMarkdown
-   * ```yml
-   * generates:
-   * path/to/file.ts:
-   *  plugins:
-   *    - typescript
-   *    - typescript-operations
-   *    - typescript-react-apollo
-   *  config:
-   *    addDocBlocks: true
-   * ```
-   */
-  addDocBlocks?: boolean;
+  excludePatternsOptions?: string;
 }

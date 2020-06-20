@@ -16,14 +16,15 @@ import {
 } from "graphql";
 
 import { ApolloCacheVisitor } from "./cacheVisitor";
+import { ApolloCacheRawPluginConfig } from "./config";
 
 export const plugin: PluginFunction<
-  RawClientSideBasePluginConfig,
+  ApolloCacheRawPluginConfig,
   Types.ComplexPluginOutput
 > = (
   schema: GraphQLSchema,
   documents: Types.DocumentFile[],
-  config: RawClientSideBasePluginConfig
+  config: ApolloCacheRawPluginConfig
 ) => {
   const allAst = concatAST(documents.map((v) => v.document));
 

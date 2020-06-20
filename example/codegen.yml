@@ -1,0 +1,21 @@
+overwrite: true
+schema: "schema.graphql"
+documents: "src/**/*.graphql"
+generates:
+  src/generated/graphql.tsx:
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+      - "typescript-react-apollo"
+  src/generated/cache.tsx:
+    config:
+      documentMode: external
+      importDocumentNodeExternallyFrom: ./graphql
+      apolloVersion: 2
+      excludePatterns: 'getComments'
+      excludePatternsOptions: 'i'
+    preset: import-types
+    presetConfig:
+      typesPath: ./graphql
+    plugins:
+      - "../build/src/index.js"

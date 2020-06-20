@@ -1,0 +1,8 @@
+query getComments {
+  comments {
+    message
+    user {
+      name
+    }
+  }
+}
