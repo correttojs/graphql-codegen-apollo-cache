@@ -66,7 +66,7 @@ export type Config = {
    *    reactApolloVersion: 3
    * ```
    */
-  apolloVersion?: 2 | 3;
+  reactApolloVersion?: 2 | 3;
   /**
    * @description Regexp to exclude a certain operation name
    */

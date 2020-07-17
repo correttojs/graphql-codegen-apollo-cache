@@ -6,12 +6,14 @@ generates:
     plugins:
       - "typescript"
       - "typescript-operations"
-      - "typescript-react-apollo"
+      - "typescript-react-apollo" 
+    config:
+          reactApolloVersion: 3
   src/generated/cache.tsx:
     config:
       documentMode: external
       importDocumentNodeExternallyFrom: ./graphql
-      apolloVersion: 2
+      apolloVersion: 3
       # excludePatterns: 'getComments'
       # excludePatternsOptions: 'i'
       # customDataIdFromObjectName: 'test'

@@ -72,7 +72,7 @@ describe("Apollo Cache", () => {
         "import { defaultDataIdFromObject, NormalizedCacheObject } from 'apollo-cache-inmemory';"
       );
       expect(content.prepend).toContain(
-        "import * as Apollo from 'apollo-client';"
+        "import { ApolloClient } from 'apollo-client';"
       );
       await validateTypeScript(content, schema, docs, {});
     });
@@ -95,7 +95,9 @@ describe("Apollo Cache", () => {
       expect(content.prepend).toContain(
         "import { defaultDataIdFromObject, NormalizedCacheObject } from 'cache';"
       );
-      expect(content.prepend).toContain("import * as Apollo from 'client';");
+      expect(content.prepend).toContain(
+        "import { ApolloClient } from 'client';"
+      );
       await validateTypeScript(content, schema, docs, {});
     });
 
@@ -105,7 +107,7 @@ describe("Apollo Cache", () => {
         schema,
         docs,
         {
-          apolloVersion: 3,
+          reactApolloVersion: 3,
         },
         {
           outputFile: "graphql.tsx",
@@ -113,7 +115,7 @@ describe("Apollo Cache", () => {
       )) as Types.ComplexPluginOutput;
 
       expect(content.prepend).toContain(
-        "import * as Apollo from '@apollo/client';"
+        "import { ApolloClient } from '@apollo/client';"
       );
       await validateTypeScript(content, schema, docs, {});
     });
@@ -189,14 +191,14 @@ describe("Apollo Cache", () => {
       )) as Types.ComplexPluginOutput;
 
       expect(content.content).toBeSimilarStringTo(`
-export function readQueryFeed(cache: Apollo.ApolloClient<NormalizedCacheObject>, variables?: FeedQueryVariables):FeedQuery {
+export function readQueryFeed(cache: ApolloClient<NormalizedCacheObject>, variables?: FeedQueryVariables):FeedQuery {
                  return cache.readQuery({
                     query: Operations.FeedDocument,
                      variables,
                  });
                  };`);
       expect(content.content).toBeSimilarStringTo(`
-export function writeQueryFeed(cache: Apollo.ApolloClient<NormalizedCacheObject>, data: FeedQuery, variables?: FeedQueryVariables) {
+export function writeQueryFeed(cache: ApolloClient<NormalizedCacheObject>, data: FeedQuery, variables?: FeedQueryVariables) {
                  cache.writeQuery({
                      query: Operations.FeedDocument,
                      variables,
@@ -240,14 +242,14 @@ export function writeQueryFeed(cache: Apollo.ApolloClient<NormalizedCacheObject>
       )) as Types.ComplexPluginOutput;
 
       expect(content.content).not.toBeSimilarStringTo(`
-export function readQueryFeed(cache: Apollo.ApolloClient<NormalizedCacheObject>, variables?: FeedQueryVariables):FeedQuery {
+export function readQueryFeed(cache: ApolloClient<NormalizedCacheObject>, variables?: FeedQueryVariables):FeedQuery {
                  return cache.readQuery({
                     query: Operations.FeedDocument,
                      variables,
                  });
                  };`);
       expect(content.content).not.toBeSimilarStringTo(`
-export function writeQueryFeed(cache: Apollo.ApolloClient<NormalizedCacheObject>, data: FeedQuery, variables?: FeedQueryVariables) {
+export function writeQueryFeed(cache: ApolloClient<NormalizedCacheObject>, data: FeedQuery, variables?: FeedQueryVariables) {
                  cache.writeQuery({
                      query: Operations.FeedDocument,
                      variables,
