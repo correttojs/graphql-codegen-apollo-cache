@@ -9,11 +9,14 @@ generates:
       - "typescript-react-apollo" 
     config:
           reactApolloVersion: 3
+          withHooks: false
+          withHOC: false
+          withComponent: false
   src/generated/cache.tsx:
     config:
       documentMode: external
       importDocumentNodeExternallyFrom: ./graphql
-      apolloVersion: 3
+      reactApolloVersion: 3
       # excludePatterns: 'getComments'
       # excludePatternsOptions: 'i'
       # customDataIdFromObjectName: 'test'
