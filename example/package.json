@@ -8,9 +8,11 @@
     "@apollo/client": "^3.2.7",
     "@graphql-codegen/cli": "^1.19.2",
     "@graphql-codegen/import-types-preset": "^1.18.0",
+    "@graphql-codegen/typed-document-node": "^1.18.2",
     "@graphql-codegen/typescript": "^1.17.11",
     "@graphql-codegen/typescript-operations": "^1.17.10",
     "@graphql-codegen/typescript-react-apollo": "^2.1.1",
+    "@graphql-typed-document-node/core": "^3.1.0",
     "react": "^17.0.1"
   },
   "scripts": {
