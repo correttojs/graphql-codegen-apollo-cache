@@ -1,10 +1,12 @@
+# NOTE: You can use [TypedDocumentNode](https://github.com/dotansimha/graphql-typed-document-node) instead
+
+see the [example](example/src/index.ts)
+
 # Graphql generator Apollo Cache Plugin
 
 GraphQL Code Generator plugin for generating a functions to read and write from the apollo cache
 
-# NOTE: You can use [TypedDocumentNode](https://github.com/dotansimha/graphql-typed-document-node) instead
 
-see the [example](example/src/index.ts)
 
 ## Install
 `npm i graphql-codegen-apollo-cache`
