@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.8](https://github.com/correttojs/graphql-codegen-apollo-cache/compare/v0.1.7...v0.1.8) (2021-02-02)
+
+
+### Features
+
+* deprecate plugin ([8a09e9d](https://github.com/correttojs/graphql-codegen-apollo-cache/commit/8a09e9dbd901430c88e4f8f11706f5073579665e))
+* review doc ([e2959f7](https://github.com/correttojs/graphql-codegen-apollo-cache/commit/e2959f75310e34a55aa09c71fa63d4849155cb19))
+
 ### [0.1.7](https://github.com/correttojs/graphql-codegen-apollo-cache/compare/v0.1.6...v0.1.7) (2020-12-28)
 
 ### [0.1.6](https://github.com/correttojs/graphql-codegen-apollo-cache/compare/v0.1.5...v0.1.6) (2020-11-19)
