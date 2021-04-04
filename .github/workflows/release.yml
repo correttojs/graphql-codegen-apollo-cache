@@ -1,0 +1,27 @@
+name: release
+on: workflow_dispatch
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org/
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # gives standard-version access to all previous commits
+      - name: generate tag and release body
+        run: |
+          git config user.name Fabio Benedetti
+          git config user.email fabyo82@outlook.com
+          npx standard-version 
+      - name: publish tag
+        id: publish_tag
+        run: |
+          git push --follow-tags origin master && npm install && npm publish
+          echo ::set-output name=tag_name::$(git describe HEAD --abbrev=0)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
