@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
-    "@apollo/client": "3.3.14",
+    "@apollo/client": "3.3.15",
     "@graphql-codegen/cli": "1.21.3",
     "@graphql-codegen/import-types-preset": "1.18.1",
     "@graphql-codegen/typed-document-node": "1.18.4",
