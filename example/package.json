@@ -7,11 +7,11 @@
   "devDependencies": {
     "@apollo/client": "3.3.20",
     "@graphql-codegen/cli": "1.21.5",
-    "@graphql-codegen/import-types-preset": "1.18.3",
-    "@graphql-codegen/typed-document-node": "1.18.7",
-    "@graphql-codegen/typescript": "1.22.2",
-    "@graphql-codegen/typescript-operations": "1.18.1",
-    "@graphql-codegen/typescript-react-apollo": "2.2.6",
+    "@graphql-codegen/import-types-preset": "1.18.4",
+    "@graphql-codegen/typed-document-node": "1.18.8",
+    "@graphql-codegen/typescript": "1.22.3",
+    "@graphql-codegen/typescript-operations": "1.18.2",
+    "@graphql-codegen/typescript-react-apollo": "2.2.7",
     "@graphql-typed-document-node/core": "3.1.0",
     "react": "17.0.2"
   },
